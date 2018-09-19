@@ -28,10 +28,18 @@ import (
 
 const (
 	// ECDSA curve label
+	// NIST curves
 	P224 byte = 1
 	P256 byte = 2
 	P384 byte = 3
 	P521 byte = 4
+
+	// SEC curves
+	// secp224r1 = 1  the same curve as P224
+	// secp256r1 = 2  the same curve as P256
+	// secp384r1 = 3  the same curve as P384
+	// secp521r1 = 4  the same curve as P521
+	secp256k1 byte = 5
 
 	// SM2 curve label
 	SM2P256V1 byte = 20
@@ -72,13 +80,13 @@ func GetNamedCurve(name string) (elliptic.Curve, error) {
 
 func GetNamedCurveLabel(name string) (byte, error) {
 	switch strings.ToUpper(name) {
-	case strings.ToUpper(elliptic.P224().Params().Name):
+	case strings.ToUpper(elliptic.P224().Params().Name), "secp224r1":
 		return P224, nil
-	case strings.ToUpper(elliptic.P256().Params().Name):
+	case strings.ToUpper(elliptic.P256().Params().Name), "secp256r1":
 		return P256, nil
-	case strings.ToUpper(elliptic.P384().Params().Name):
+	case strings.ToUpper(elliptic.P384().Params().Name), "secp384r1":
 		return P384, nil
-	case strings.ToUpper(elliptic.P521().Params().Name):
+	case strings.ToUpper(elliptic.P521().Params().Name), "secp521r1":
 		return P521, nil
 	case strings.ToUpper(sm2.SM2P256V1().Params().Name):
 		return SM2P256V1, nil
