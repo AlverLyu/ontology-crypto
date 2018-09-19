@@ -148,6 +148,14 @@ func GetKeyType(p PublicKey) KeyType {
 //
 // This function will panic if error occurs.
 func SerializePublicKey(key PublicKey) []byte {
+	return serializePublic(key, false)
+}
+
+func SerializePublicKeyFast(key PublicKey) []byte {
+	return serializePublic(key, true)
+}
+
+func serializePublic(key PublicKey, fast bool) []byte {
 	var buf bytes.Buffer
 	switch t := key.(type) {
 	case *ec.PublicKey:
@@ -155,7 +163,7 @@ func SerializePublicKey(key PublicKey) []byte {
 		case ec.ECDSA:
 			// Take P-256 as a special case
 			if t.Params().Name == elliptic.P256().Params().Name {
-				return ec.EncodePublicKey(t.PublicKey, true)
+				return ec.EncodePublicKey(t.PublicKey, !fast)
 			}
 			buf.WriteByte(byte(PK_ECDSA))
 		case ec.SM2:
@@ -166,7 +174,7 @@ func SerializePublicKey(key PublicKey) []byte {
 			panic(err)
 		}
 		buf.WriteByte(label)
-		buf.Write(ec.EncodePublicKey(t.PublicKey, true))
+		buf.Write(ec.EncodePublicKey(t.PublicKey, !fast))
 	case ed25519.PublicKey:
 		buf.WriteByte(byte(PK_EDDSA))
 		buf.WriteByte(ED25519)
